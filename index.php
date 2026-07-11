@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Aplikasi Analisis Statistika</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark bg-primary shadow">
+
+        <div class="container">
+
+            <span class="navbar-brand fw-bold fs-4">
+
+                <i class="bi bi-bar-chart-fill"></i>
+
+                Aplikasi Analisis Statistika
+
+            </span>
+
+        </div>
+
+    </nav>
+
+    <!-- Container -->
+    <div class="container my-4">
+
+        <!-- Input -->
+        <div class="card shadow border-0">
+
+            <div class="card-header bg-white">
+
+                <h4 class="mb-0">
+
+                    Input Data
+
+                </h4>
+
+            </div>
+
+            <div class="card-body">
+
+                <label class="form-label">
+
+                    Masukkan angka (pisahkan dengan koma)
+
+                </label>
+
+                <input
+                    type="text"
+                    class="form-control form-control-lg"
+                    id="data"
+                    placeholder="Contoh : 10,20,30,40,50">
+
+                <div class="mt-4">
+
+                    <button class="btn btn-primary btn-lg" id="btnHitung">
+
+                        <i class="bi bi-calculator"></i>
+
+                        Hitung
+
+                    </button>
+
+                    <button class="btn btn-warning btn-lg text-white" id="btnReset">
+
+                        <i class="bi bi-arrow-clockwise"></i>
+
+                        Reset
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Statistik -->
+        <div class="row mt-4">
+
+            <div class="col-lg-4 col-md-6 mb-3">
+
+                <div class="card card-stat shadow-sm">
+
+                    <div class="card-body">
+
+                        <h6>Jumlah Data</h6>
+
+                        <h2 id="jumlah">0</h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-3">
+
+                <div class="card card-stat shadow-sm">
+
+                    <div class="card-body">
+
+                        <h6>Mean</h6>
+
+                        <h2 id="mean">0</h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-3">
+
+                <div class="card card-stat shadow-sm">
+
+                    <div class="card-body">
+
+                        <h6>Median</h6>
+
+                        <h2 id="median">0</h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-3">
+
+                <div class="card card-stat shadow-sm">
+
+                    <div class="card-body">
+
+                        <h6>Modus</h6>
+
+                        <h2 id="modus">0</h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-3">
+
+                <div class="card card-stat shadow-sm">
+
+                    <div class="card-body">
+
+                        <h6>Varians</h6>
+
+                        <h2 id="varians">0</h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-3">
+
+                <div class="card card-stat shadow-sm">
+
+                    <div class="card-body">
+
+                        <h6>Standar Deviasi</h6>
+
+                        <h2 id="stdev">0</h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Grafik -->
+
+        <div class="card shadow border-0 mt-3">
+
+            <div class="card-header bg-white">
+
+                <h4>
+
+                    Histogram Data
+
+                </h4>
+
+            </div>
+
+            <div class="card-body">
+
+                <canvas id="chartHistogram"></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <footer class="text-center text-muted py-4">
+
+        Mini Statistical Analysis Tool © 2026
+
+    </footer>
+
+    <!-- ChartJS -->
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Javascript -->
+
+    <script src="assets/js/app.js"></script>
+
+</body>
+
+</html>
