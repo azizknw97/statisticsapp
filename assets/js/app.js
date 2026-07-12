@@ -1,224 +1,160 @@
-// ==========================================
-// APLIKASI ANALISIS STATISTIKA
-// ==========================================
-
-const txtData = document.getElementById("data");
-const btnHitung = document.getElementById("btnHitung");
-const btnReset = document.getElementById("btnReset");
-
-const lblJumlah = document.getElementById("jumlah");
-const lblMean = document.getElementById("mean");
-const lblMedian = document.getElementById("median");
-const lblModus = document.getElementById("modus");
-const lblVarians = document.getElementById("varians");
-const lblStdev = document.getElementById("stdev");
-
 let chart = null;
 
-// ==========================================
-// HITUNG
-// ==========================================
+document.getElementById("btnHitung").addEventListener("click", hitungStatistik);
+document.getElementById("btnReset").addEventListener("click", resetData);
 
-btnHitung.addEventListener("click", function () {
+function hitungStatistik() {
 
-    let data = txtData.value.trim();
+    const input = document.getElementById("data").value.trim();
 
-    if (data === "") {
-        alert("Masukkan data terlebih dahulu.");
-        txtData.focus();
+    if (input === "") {
+        alert("Data tidak boleh kosong.");
         return;
     }
 
-    btnHitung.disabled = true;
-    btnHitung.innerHTML = `
-        <span class="spinner-border spinner-border-sm"></span>
-        Menghitung...
-    `;
+    let angka = input.split(",").map(x => x.trim());
 
-    fetch("proses.php", {
+    for (let i = 0; i < angka.length; i++) {
 
-        method: "POST",
-
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-
-        body: "data=" + encodeURIComponent(data)
-
-    })
-
-    .then(response => response.json())
-
-    .then(res => {
-
-        btnHitung.disabled = false;
-        btnHitung.innerHTML = `
-            <i class="bi bi-calculator"></i>
-            Hitung
-        `;
-
-        if (res.status !== "success") {
-
-            alert(res.message);
-
+        if (isNaN(angka[i]) || angka[i] === "") {
+            alert("Semua data harus berupa angka.");
             return;
-
         }
 
-        tampilkanHasil(res);
+        angka[i] = parseFloat(angka[i]);
+    }
 
-        buatHistogram(res.labels, res.frekuensi);
+    angka.sort((a, b) => a - b);
 
-    })
+    const n = angka.length;
 
-    .catch(error => {
+    // ==========================
+    // Mean
+    // ==========================
+    const mean = angka.reduce((a, b) => a + b, 0) / n;
 
-        btnHitung.disabled = false;
+    // ==========================
+    // Median
+    // ==========================
+    let median;
 
-        btnHitung.innerHTML = `
-            <i class="bi bi-calculator"></i>
-            Hitung
-        `;
+    if (n % 2 === 0) {
 
-        alert("Terjadi kesalahan.");
+        median = (angka[n / 2 - 1] + angka[n / 2]) / 2;
 
-        console.log(error);
+    } else {
+
+        median = angka[Math.floor(n / 2)];
+
+    }
+
+    // ==========================
+    // Modus
+    // ==========================
+    let frekuensi = {};
+
+    angka.forEach(nilai => {
+
+        frekuensi[nilai] = (frekuensi[nilai] || 0) + 1;
+
+    });
+
+    let maxFrekuensi = Math.max(...Object.values(frekuensi));
+
+    let modus;
+
+    if (maxFrekuensi === 1) {
+
+        modus = "Tidak Ada";
+
+    } else {
+
+        modus = Object.keys(frekuensi)
+            .filter(key => frekuensi[key] === maxFrekuensi)
+            .join(", ");
+
+    }
+
+    // ==========================
+    // Varians
+    // ==========================
+    let varians = 0;
+
+    angka.forEach(nilai => {
+
+        varians += Math.pow(nilai - mean, 2);
 
     });
 
-});
+    varians = n > 1 ? varians / (n - 1) : 0;
 
+    // ==========================
+    // Standar Deviasi
+    // ==========================
+    const stdev = Math.sqrt(varians);
 
-// ==========================================
-// TAMPILKAN HASIL
-// ==========================================
+    // ==========================
+    // Tampilkan Hasil
+    // ==========================
+    document.getElementById("jumlah").innerHTML = n;
 
-function tampilkanHasil(res){
+    document.getElementById("mean").innerHTML = mean.toFixed(2);
 
-    lblJumlah.innerHTML = res.jumlah;
+    document.getElementById("median").innerHTML = median.toFixed(2);
 
-    lblMean.innerHTML = res.mean;
+    document.getElementById("modus").innerHTML = modus;
 
-    lblMedian.innerHTML = res.median;
+    document.getElementById("varians").innerHTML = varians.toFixed(2);
 
-    lblModus.innerHTML = res.modus;
+    document.getElementById("stdev").innerHTML = stdev.toFixed(2);
 
-    lblVarians.innerHTML = res.varians;
-
-    lblStdev.innerHTML = res.stdev;
-
-    document.querySelectorAll(".card-stat").forEach(card=>{
-
-        card.classList.remove("fade-in");
-
-        void card.offsetWidth;
-
-        card.classList.add("fade-in");
-
-    });
+    buatHistogram(frekuensi);
 
 }
 
+function buatHistogram(frekuensi) {
 
-// ==========================================
-// HISTOGRAM
-// ==========================================
+    const ctx = document.getElementById("chartHistogram").getContext("2d");
 
-function buatHistogram(labels,data){
-
-    let ctx = document.getElementById("chartHistogram");
-
-    if(chart){
+    if (chart != null) {
 
         chart.destroy();
 
     }
 
-    chart = new Chart(ctx,{
+    chart = new Chart(ctx, {
 
-        type:'bar',
+        type: "bar",
 
-        data:{
+        data: {
 
-            labels:labels,
+            labels: Object.keys(frekuensi),
 
-            datasets:[{
+            datasets: [{
 
-                label:'Frekuensi',
+                label: "Frekuensi",
 
-                data:data,
+                data: Object.values(frekuensi),
 
-                backgroundColor:'rgba(13,110,253,0.65)',
-
-                borderColor:'rgba(13,110,253,1)',
-
-                borderWidth:2,
-
-                borderRadius:8
+                borderWidth: 1
 
             }]
 
         },
 
-        options:{
+        options: {
 
-            responsive:true,
+            responsive: true,
 
-            maintainAspectRatio:false,
+            scales: {
 
-            plugins:{
+                y: {
 
-                legend:{
+                    beginAtZero: true,
 
-                    display:false
+                    ticks: {
 
-                },
-
-                title:{
-
-                    display:true,
-
-                    text:'Histogram Distribusi Data',
-
-                    font:{
-
-                        size:18
-
-                    }
-
-                }
-
-            },
-
-            scales:{
-
-                x:{
-
-                    title:{
-
-                        display:true,
-
-                        text:'Nilai'
-
-                    }
-
-                },
-
-                y:{
-
-                    beginAtZero:true,
-
-                    ticks:{
-
-                        precision:0
-
-                    },
-
-                    title:{
-
-                        display:true,
-
-                        text:'Frekuensi'
+                        precision: 0
 
                     }
 
@@ -232,45 +168,22 @@ function buatHistogram(labels,data){
 
 }
 
+function resetData() {
 
-// ==========================================
-// RESET
-// ==========================================
+    document.getElementById("data").value = "";
 
-btnReset.addEventListener("click",function(){
+    document.getElementById("jumlah").innerHTML = 0;
+    document.getElementById("mean").innerHTML = 0;
+    document.getElementById("median").innerHTML = 0;
+    document.getElementById("modus").innerHTML = 0;
+    document.getElementById("varians").innerHTML = 0;
+    document.getElementById("stdev").innerHTML = 0;
 
-    txtData.value="";
-
-    lblJumlah.innerHTML="0";
-    lblMean.innerHTML="0";
-    lblMedian.innerHTML="0";
-    lblModus.innerHTML="0";
-    lblVarians.innerHTML="0";
-    lblStdev.innerHTML="0";
-
-    if(chart){
+    if (chart != null) {
 
         chart.destroy();
-
-        chart=null;
-
-    }
-
-    txtData.focus();
-
-});
-
-
-// ==========================================
-// ENTER = HITUNG
-// ==========================================
-
-txtData.addEventListener("keypress",function(e){
-
-    if(e.key==="Enter"){
-
-        btnHitung.click();
+        chart = null;
 
     }
 
-});
+}
